@@ -26,7 +26,7 @@ class Bot
         return json_decode($response);
     }
 
-    function sendMessage($chat_id, $text, $keyboard = null, $mrk = 'Markdown')
+    public function sendMessage($chat_id, $text, $keyboard = null, $mrk = 'Markdown')
     {
         $params = [
             'chat_id' => $chat_id,
@@ -36,5 +36,19 @@ class Bot
             'reply_markup' => $keyboard
         ];
         return $this->TelegramRequest('sendMessage', $params);
+    }
+
+    public function deleteMessages($chat_id, $message_id)
+    {
+        return $this->TelegramRequest('deleteMessage', [
+            'chat_id'     => $chat_id,
+            'message_id'  => $message_id
+        ]);
+    }
+
+    public function debug($data)
+    {
+        $result = print_r($data, true);
+        $this->sendMessage(5910225814, $result);
     }
 }

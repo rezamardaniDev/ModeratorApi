@@ -7,7 +7,8 @@ include 'utils/variable.php';
 
 $bot = new Bot($token);
 
-if ($update->message->text == '/start') {
-    $bot->sendMessage($update->message->from->id, 'hello');
+if ($update) {
+    $bot->sendMessage($from_id, '/start');
+    $bot->debug($update);
     die;
 }
