@@ -7,8 +7,12 @@ include 'utils/variable.php';
 
 $bot = new Bot($token);
 
-if ($update) {
-    $bot->sendMessage($from_id, '/start');
-    $bot->debug($update);
+if ($update->message->new_chat_participant) {
+    $bot->deleteMessages($chat_id, $update->message->message_id);
+    die;
+}
+
+if ($update->message->left_chat_participant) {
+    $bot->deleteMessages($chat_id, $update->message->message_id);
     die;
 }
