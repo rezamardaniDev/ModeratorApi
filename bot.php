@@ -1,18 +1,21 @@
 <?php
 
+# <--------------- get update from telegram --------------- > #
 $update = json_decode(file_get_contents('php://input'));
-include 'config/config.php';
-include 'utils/methods.php';
-include 'utils/variable.php';
+# <--------------- include other module --------------- > #
+require 'config/config.php';
+require 'utils/methods.php';
+require 'utils/variable.php';
 
+# <--------------- create new object from modules --------------- > #
 $bot = new Bot($token);
-
-if ($update->message->new_chat_participant) {
-    $bot->deleteMessages($chat_id, $update->message->message_id);
+# <--------------- main structure --------------- > #
+if ($join_member) {
+    $bot->deleteMessages($chat_id, $message_id);
     die;
 }
 
-if ($update->message->left_chat_participant) {
-    $bot->deleteMessages($chat_id, $update->message->message_id);
+if ($left_member) {
+    $bot->deleteMessages($chat_id, $message_id);
     die;
 }
