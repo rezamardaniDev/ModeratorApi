@@ -79,7 +79,6 @@ if ($text == 'حذف اخطار') {
     die;
 }
 
-
 if ($text == 'سکوت') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if ($userCursor->getUser($r_from_id, $r_chat_id)->is_creator) {
@@ -96,6 +95,30 @@ if ($text == 'حذف سکوت') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         $userCursor->unMuteUser($r_from_id, $r_chat_id);
         $bot->sendMessage($r_chat_id, "کاربر {$r_first_name} توسط ناظر رفع سکوت شد");
+    }
+    die;
+}
+
+if ($text == 'قفل سرویس') {
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
+        if (!$settingCursor->getCleanServiceStat($chat_id)->clean_service) {
+            $settingCursor->onCleanService($chat_id);
+            $bot->sendMessage($chat_id, 'قفل پیام های ورود و خروج کاربران فعال شد.');
+        } else {
+            $bot->sendMessage($chat_id, 'قفل سرویس از قبل فعال میباشد');
+        }
+    }
+    die;
+}
+
+if ($text == 'حذف قفل سرویس') {
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
+        if ($settingCursor->getCleanServiceStat($chat_id)->clean_service) {
+            $settingCursor->offCleanService($chat_id);
+            $bot->sendMessage($chat_id, 'قفل پیام های ورود و خروج کاربران غیرفعال شد.');
+        } else {
+            $bot->sendMessage($chat_id, 'قفل سرویس از قبل غیرفعال میباشد');
+        }
     }
     die;
 }
@@ -128,7 +151,6 @@ if ($text == 'پیکربندی') {
     }
     die;
 }
-
 
 if ($text == 'ربات') {
     $bot->sendMessage($from_id, 'bot is online!');
