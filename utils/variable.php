@@ -6,6 +6,7 @@ if (isset($update->message)) {
     $from_id = $message->from->id;
     $first_name = $message->from->first_name;
     $chat_id = $message->chat->id;
+    $first_name = $message->from->first_name;
     $message_id  = $update->message->message_id;
     $join_member = $message->new_chat_participant;
     $left_member = $message->left_chat_participant;
