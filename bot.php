@@ -58,16 +58,27 @@ if ($text == '/me') {
 }
 
 if ($text == 'اخطار') {
-    $userCursor->newWarn($r_from_id, $chat_id);
-    $warn = $userCursor->getUser($r_from_id, $r_chat_id)->warn;
-    $bot->sendMessage($chat_id, "{$r_first_name} اخطار گرفتی\nتعداد اخطار: {$warn}/3");
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
+        $userCursor->newWarn($r_from_id, $chat_id);
+        $warn = $userCursor->getUser($r_from_id, $r_chat_id)->warn;
+        $bot->sendMessage($chat_id, "{$r_first_name} اخطار گرفتی\nتعداد اخطار: {$warn}/3");
 
-    if ($warn == 3) {
-        $userCursor->muteUser($r_from_id, $chat_id);
-        $bot->sendMessage($chat_id, "{$r_first_name} به دلیل 3 اخطار میوت شدی");
+        if ($warn == 3) {
+            $userCursor->muteUser($r_from_id, $chat_id);
+            $bot->sendMessage($chat_id, "{$r_first_name} به دلیل 3 اخطار میوت شدی");
+        }
     }
     die;
 }
+
+if ($text == 'حذف اخطار') {
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
+        $userCursor->delWarn($r_from_id, $chat_id);
+        $bot->sendMessage($chat_id, "{$r_first_name} عزیز\n اخطار های شما صفر شد جووووون");
+    }
+    die;
+}
+
 
 if ($text == 'سکوت') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {

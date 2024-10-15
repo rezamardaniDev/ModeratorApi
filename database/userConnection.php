@@ -30,6 +30,12 @@ class UserConnection extends Connection
         $stmt->execute([$from_id, $group_id]);
     }
 
+    public function delWarn($from_id, $group_id)
+    {
+        $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `warn` = 0 WHERE `chat_id` = ? AND `group_id` = ?");
+        $stmt->execute([$from_id, $group_id]);
+    }
+
     public function muteUser($from_id, $group_id)
     {
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `is_mute` = 1 WHERE `chat_id` = ? AND `group_id` = ?");
