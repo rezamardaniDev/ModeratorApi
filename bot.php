@@ -101,31 +101,37 @@ if ($text == 'حذف سکوت') {
 }
 
 if ($text == 'پیکربندی') {
+    foreach($bot->getChatAdmins($chat_id)->result as $admin){
+        if ($admin->user->id == $from_id && $admin->status == "creator"){
 
-    $checkExistsGroup = $settingCursor->getSetting($chat_id);
-    if (!$checkExistsGroup) {
-        $settingCursor->addNewSetting($chat_id);
-
-        $getChatAdmins = $bot->getChatAdmins($chat_id)->result;
-        $botMessage = "پیکربندی انجام شد\nادمین های شناسایی شده: \n\n";
-
-        foreach ($getChatAdmins as $admin) {
-            $userExists = $userCursor->getUser($admin->user->id, $chat_id);
-            if (!$userExists) {
-                $userCursor->addNewUser($admin->user->id, $chat_id, $admin->user->first_name);
+            $checkExistsGroup = $settingCursor->getSetting($chat_id);
+            if (!$checkExistsGroup) {
+                $settingCursor->addNewSetting($chat_id);
+        
+                $getChatAdmins = $bot->getChatAdmins($chat_id)->result;
+                $botMessage = "پیکربندی انجام شد\nادمین های شناسایی شده: \n\n";
+        
+                foreach ($getChatAdmins as $admin) {
+                    $userExists = $userCursor->getUser($admin->user->id, $chat_id);
+                    if (!$userExists) {
+                        $userCursor->addNewUser($admin->user->id, $chat_id, $admin->user->first_name);
+                    }
+        
+                    if ($admin->status != 'creator') {
+                        $userCursor->setNewAdmin($admin->user->id, $chat_id);
+                        $botMessage .= "{$admin->user->first_name}\n";
+                    }
+                    if ($admin->status == 'creator') {
+                        $userCursor->setCreator($admin->user->id, $chat_id);
+                        $botMessage .= "{$admin->user->first_name}\n";
+                    }
+                }
+                $bot->sendMessage($chat_id, $botMessage);
             }
-
-            if ($admin->status != 'creator') {
-                $userCursor->setNewAdmin($admin->user->id, $chat_id);
-                $botMessage .= "{$admin->user->first_name}\n";
-            }
-            if ($admin->status == 'creator') {
-                $userCursor->setCreator($admin->user->id, $chat_id);
-                $botMessage .= "{$admin->user->first_name}\n";
-            }
+            die;
         }
-        $bot->sendMessage($chat_id, $botMessage);
-    }
+    };
+
     die;
 }
 
