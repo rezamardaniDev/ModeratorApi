@@ -2,33 +2,42 @@
 
 # <--------------- get update from telegram --------------- > #
 $update = json_decode(file_get_contents('php://input'));
-# <--------------- include other module --------------- > #
-include 'config/config.php';
-include 'utils/methods.php';
-include 'utils/helpers.php';
-include 'utils/variable.php';
+# <--------------- require other module --------------- > #
+require 'config/config.php';
+require 'utils/methods.php';
+require 'utils/helpers.php';
+require 'utils/variable.php';
 require 'database/connector.php';
-include 'database/settingConnection.php';
-include 'database/userConnection.php';
+require 'database/settingConnection.php';
+require 'database/userConnection.php';
 # <--------------- create new object from modules --------------- > #
 $bot = new Bot($token);
 $userCursor = new UserConnection();
 $settingCursor = new SettingConnection();
 # <--------------- main structure --------------- > #
-if ($update) {
-    # clean join message
-    if ($join_member) {
+if ($update && $settingCursor->getSetting($chat_id)) {
+
+    # clean user message is user muted
+    if ($userCursor->getUser($from_id, $chat_id)->is_mute) {
         $bot->deleteMessages($chat_id, $message_id);
         die;
     }
 
-    # clean left message
-    if ($left_member) {
+    # clean join and left message
+    if (($join_member || $left_member) && $settingCursor->getCleanServiceStat($chat_id)->clean_service) {
         $bot->deleteMessages($chat_id, $message_id);
-        die;
     }
 
-    # check exist user
+    # when new member join group, added to database
+    if ($participant_id) {
+        $userExists = $userCursor->getUser($participant_id, $chat_id);
+        if (!$userExists) {
+            $userCursor->addNewUser($participant_id, $chat_id, $participant_first_name);
+            $userCursor->addCountMessage($participant_id, $chat_id);
+        }
+    }
+
+    # check exist user when send message in group
     $userExists = $userCursor->getUser($from_id, $chat_id);
     if ($userExists) {
         # just add 1 counter if user exist
@@ -37,10 +46,6 @@ if ($update) {
         # add new user and add 1 counter
         $userCursor->addNewUser($from_id, $chat_id, $first_name);
         $userCursor->addCountMessage($from_id, $chat_id);
-    }
-
-    if ($userCursor->getUser($from_id, $chat_id)->is_mute) {
-        $bot->deleteMessages($chat_id, $message_id);
     }
 }
 
@@ -54,7 +59,7 @@ if ($text == '/me') {
 
 if ($text == 'اخطار') {
     $userCursor->newWarn($r_from_id, $chat_id);
-    $warn = $userCursor->getUser($r_from_id, $chat_id)->warn;
+    $warn = $userCursor->getUser($r_from_id, $r_chat_id)->warn;
     $bot->sendMessage($chat_id, "{$r_first_name} اخطار گرفتی\nتعداد اخطار: {$warn}/3");
 
     if ($warn == 3) {
@@ -66,20 +71,20 @@ if ($text == 'اخطار') {
 
 if ($text == 'سکوت') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
-        if ($userCursor->getUser($r_from_id, $chat_id)->is_creator) {
+        if ($userCursor->getUser($r_from_id, $r_chat_id)->is_creator) {
             $bot->deleteMessages($chat_id, $message_id);
             die;
         }
         $userCursor->muteUser($r_from_id, $r_chat_id);
-        $bot->sendMessage($chat_id, "کاربر {$r_first_name} توسط ناظر سکوت شد");
+        $bot->sendMessage($r_chat_id, "کاربر {$r_first_name} توسط ناظر سکوت شد");
     }
     die;
 }
 
-if ($text == 'رفع سکوت') {
-    if ($userCursor->getUser($from_id, $chat_id)->is_admin) {
-        $userCursor->unmuteUser($r_from_id, $chat_id);
-        $bot->sendMessage($chat_id, "کاربر {$r_first_name} توسط ناظر رفع سکوت شد");
+if ($text == 'حذف سکوت') {
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
+        $userCursor->unMuteUser($r_from_id, $r_chat_id);
+        $bot->sendMessage($r_chat_id, "کاربر {$r_first_name} توسط ناظر رفع سکوت شد");
     }
     die;
 }
@@ -108,7 +113,6 @@ if ($text == 'پیکربندی') {
                 $botMessage .= "{$admin->user->first_name}\n";
             }
         }
-
         $bot->sendMessage($chat_id, $botMessage);
     }
     die;

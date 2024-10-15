@@ -37,7 +37,7 @@ class UserConnection extends Connection
     }
 
 
-    public function unmuteUser($from_id, $group_id)
+    public function unMuteUser($from_id, $group_id)
     {
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `is_mute` = 0 WHERE `chat_id` = ? AND `group_id` = ?");
         $stmt->execute([$from_id, $group_id]);

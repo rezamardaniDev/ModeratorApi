@@ -10,7 +10,10 @@ if (isset($update->message)) {
     $message_id  = $update->message->message_id;
     $join_member = $message->new_chat_participant;
     $left_member = $message->left_chat_participant;
+    $participant_id = $join_member->id;
+    $participant_first_name = $join_member->first_name;
 }
+
 
 if (isset($update->message->reply_to_message)) {
     $message = $update->message->reply_to_message;

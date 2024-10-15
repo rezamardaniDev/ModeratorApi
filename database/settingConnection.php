@@ -17,6 +17,8 @@ class SettingConnection extends Connection
         return $stmt->fetch();
     }
 
+
+
     # get cleanService info from Database
     public function getCleanServiceStat($group_id)
     {
@@ -38,6 +40,8 @@ class SettingConnection extends Connection
         $stmt = $this->db->prepare("UPDATE `tb_settings` SET `clean_service` = 0 WHERE `group_id` = ?");
         $stmt->execute([$group_id]);
     }
+
+
 
     # get cleanlink info from Database
     public function getCleanLinkStat($group_id)
@@ -61,6 +65,8 @@ class SettingConnection extends Connection
         $stmt->execute([$group_id]);
     }
 
+
+
     # get cleanUsername info from Database
     public function getCleanUsernameStat($group_id)
     {
@@ -82,6 +88,8 @@ class SettingConnection extends Connection
         $stmt = $this->db->prepare("UPDATE `tb_settings` SET `clean_username` = 0 WHERE `group_id` = ?");
         $stmt->execute([$group_id]);
     }
+
+
 
     # get cleanUsername info from Database
     public function getCleanBotStat($group_id)
@@ -105,6 +113,8 @@ class SettingConnection extends Connection
         $stmt->execute([$group_id]);
     }
 
+
+
     # get cleanVedio info from Database
     public function getCleanVedioStat($group_id)
     {
@@ -126,6 +136,8 @@ class SettingConnection extends Connection
         $stmt = $this->db->prepare("UPDATE `tb_settings` SET `clean_vedio` = 0 WHERE `group_id` = ?");
         $stmt->execute([$group_id]);
     }
+
+
 
     # get cleanPhoto info from Database 
     public function getCleanPhotoStat($group_id)
