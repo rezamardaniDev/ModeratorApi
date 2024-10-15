@@ -1,17 +1,23 @@
 <?php
 
-require 'connector.php';
-
 class SettingConnection extends Connection
 {
     # add new user to Database
-    public function addNewGroup($group_id)
+    public function addNewSetting($group_id)
     {
         $stmt = $this->db->prepare("INSERT INTO `tb_settings` (`group_id`) VALUES (?)");
         $stmt->execute([$group_id]);
     }
 
-    # get cleanService info from Database - - - - - - - - - - - - - - - -
+    # get group info
+    public function getSetting($group_id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM `tb_settings` WHERE `group_id` = ?");
+        $stmt->execute([$group_id]);
+        return $stmt->fetch();
+    }
+
+    # get cleanService info from Database
     public function getCleanServiceStat($group_id)
     {
         $stmt = $this->db->prepare("SELECT `clean_service` FROM `tb_settings` WHERE `group_id` = ?");
@@ -33,7 +39,7 @@ class SettingConnection extends Connection
         $stmt->execute([$group_id]);
     }
 
-    # get cleanlink info from Database - - - - - - - - - - - - - - - - 
+    # get cleanlink info from Database
     public function getCleanLinkStat($group_id)
     {
         $stmt = $this->db->prepare("SELECT `clean_link` FROM `tb_settings` WHERE `group_id` = ?");
@@ -55,7 +61,7 @@ class SettingConnection extends Connection
         $stmt->execute([$group_id]);
     }
 
-    # get cleanUsername info from Database - - - - - - - - - - - - - - - - 
+    # get cleanUsername info from Database
     public function getCleanUsernameStat($group_id)
     {
         $stmt = $this->db->prepare("SELECT `clean_username` FROM `tb_settings` WHERE `group_id` = ?");
@@ -77,7 +83,7 @@ class SettingConnection extends Connection
         $stmt->execute([$group_id]);
     }
 
-    # get cleanUsername info from Database - - - - - - - - - - - - - - - - 
+    # get cleanUsername info from Database
     public function getCleanBotStat($group_id)
     {
         $stmt = $this->db->prepare("SELECT `clean_bot` FROM `tb_settings` WHERE `group_id` = ?");
@@ -99,7 +105,7 @@ class SettingConnection extends Connection
         $stmt->execute([$group_id]);
     }
 
-    # get cleanVedio info from Database - - - - - - - - - - - - - - - - 
+    # get cleanVedio info from Database
     public function getCleanVedioStat($group_id)
     {
         $stmt = $this->db->prepare("SELECT `clean_vedio` FROM `tb_settings` WHERE `group_id` = ?");
@@ -121,7 +127,7 @@ class SettingConnection extends Connection
         $stmt->execute([$group_id]);
     }
 
-    # get cleanPhoto info from Database - - - - - - - - - - - - - - - - 
+    # get cleanPhoto info from Database 
     public function getCleanPhotoStat($group_id)
     {
         $stmt = $this->db->prepare("SELECT `clean_photo` FROM `tb_settings` WHERE `group_id` = ?");

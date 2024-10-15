@@ -7,10 +7,13 @@ include 'config/config.php';
 include 'utils/methods.php';
 include 'utils/helpers.php';
 include 'utils/variable.php';
+require 'database/connector.php';
+include 'database/settingConnection.php';
 include 'database/userConnection.php';
 # <--------------- create new object from modules --------------- > #
 $bot = new Bot($token);
 $userCursor = new UserConnection();
+$settingCursor = new SettingConnection();
 # <--------------- main structure --------------- > #
 if ($update) {
     # clean join message
@@ -62,29 +65,57 @@ if ($text == 'اخطار') {
 }
 
 if ($text == 'سکوت') {
-    $userCursor->muteUser($r_from_id, $chat_id);
-    $bot->sendMessage($chat_id, "کاربر {$r_first_name} توسط ناظر سکوت شد");
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
+        if ($userCursor->getUser($r_from_id, $chat_id)->is_creator) {
+            $bot->deleteMessages($chat_id, $message_id);
+            die;
+        }
+        $userCursor->muteUser($r_from_id, $r_chat_id);
+        $bot->sendMessage($chat_id, "کاربر {$r_first_name} توسط ناظر سکوت شد");
+    }
     die;
 }
 
 if ($text == 'رفع سکوت') {
-    $userCursor->unmuteUser($r_from_id, $chat_id);
-    $bot->sendMessage($chat_id, "کاربر {$r_first_name} توسط ناظر رفع سکوت شد");
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin) {
+        $userCursor->unmuteUser($r_from_id, $chat_id);
+        $bot->sendMessage($chat_id, "کاربر {$r_first_name} توسط ناظر رفع سکوت شد");
+    }
     die;
 }
 
 if ($text == 'پیکربندی') {
-    $getChatAdmins = $bot->getChatAdmins($chat_id)->result;
-    $botMessage = "پیکربندی انجام شد\nادمین های شناسایی شده: \n\n";
-    foreach ($getChatAdmins as $admin) {
-        if ($admin->status != 'creator') {
-            $userCursor->setNewAdmin($admin->user->id, $chat_id);
-            $botMessage .= "{$admin->user->first_name}\n";
+
+    $checkExistsGroup = $settingCursor->getSetting($chat_id);
+    if (!$checkExistsGroup) {
+        $settingCursor->addNewSetting($chat_id);
+
+        $getChatAdmins = $bot->getChatAdmins($chat_id)->result;
+        $botMessage = "پیکربندی انجام شد\nادمین های شناسایی شده: \n\n";
+
+        foreach ($getChatAdmins as $admin) {
+            $userExists = $userCursor->getUser($admin->user->id, $chat_id);
+            if (!$userExists) {
+                $userCursor->addNewUser($admin->user->id, $chat_id, $admin->user->first_name);
+            }
+
+            if ($admin->status != 'creator') {
+                $userCursor->setNewAdmin($admin->user->id, $chat_id);
+                $botMessage .= "{$admin->user->first_name}\n";
+            }
+            if ($admin->status == 'creator') {
+                $userCursor->setCreator($admin->user->id, $chat_id);
+                $botMessage .= "{$admin->user->first_name}\n";
+            }
         }
-        if ($admin->status == 'creator') {
-            $userCursor->setCreator($admin->user->id, $chat_id);
-        }
+
+        $bot->sendMessage($chat_id, $botMessage);
     }
-    $bot->sendMessage($chat_id, $botMessage);
+    die;
+}
+
+
+if ($text == 'ربات') {
+    $bot->sendMessage($from_id, 'bot is online!');
     die;
 }

@@ -1,7 +1,5 @@
 <?php
 
-require 'connector.php';
-
 class UserConnection extends Connection
 {
     # add new user to Database
