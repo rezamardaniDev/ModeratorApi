@@ -14,8 +14,8 @@ class UserConnection extends Connection
     # get user info from Database
     public function getUser($chat_id, $group_id)
     {
-        $stmt = $this->db->prepare("SELECT * FROM `tb_userStat` WHERE `chat_id` = {$chat_id} AND `group_id` = {$group_id}");
-        $stmt->execute();
+        $stmt = $this->db->prepare("SELECT * FROM `tb_userStat` WHERE `chat_id` = ? AND `group_id` = ? ");
+        $stmt->execute([$chat_id, $group_id]);
         return $stmt->fetch();
     }
 

@@ -6,31 +6,12 @@ $update = json_decode(file_get_contents('php://input'));
 include 'config/config.php';
 include 'utils/methods.php';
 include 'utils/helpers.php';
+include 'utils/variable.php';
 include 'database/userConnection.php';
 # <--------------- create new object from modules --------------- > #
 $bot = new Bot($token);
 $userCursor = new UserConnection();
 # <--------------- main structure --------------- > #
-if (isset($update->message)) {
-    $message = $update->message;
-    $text    = $message->text;
-    $from_id = $message->from->id;
-    $chat_id = $message->chat->id;
-    $message_id  = $update->message->message_id;
-    $join_member = $message->new_chat_participant;
-    $left_member = $message->left_chat_participant;
-}
-
-if (isset($update->callback_query)) {
-    $callback_id = $update->callback_query->id;
-    $from_id     = $update->callback_query->from->id;
-    $data        = $update->callback_query->data;
-    $query_id    = $update->callback_query->id;
-    $type        = $update->callback_query->message->chat->type;
-    $message_id  = $update->callback_query->message->message_id;
-}
-
-# <--------------- clean join and left message --------------- > #
 if ($update) {
 
     # clean join message
@@ -52,19 +33,15 @@ if ($update) {
         $userCursor->addCountMessage($from_id, $chat_id);
     } else {
         # add new user and add 1 counter
-        $userCursor->addNewUser( $from_id, $chat_id, 'as');
+        $userCursor->addNewUser($from_id, $chat_id, $first_name);
         $userCursor->addCountMessage($from_id, $chat_id);
     }
 }
 
 # show user info when send /me in group
 if ($text == '/me') {
-    $getUser = $userCursor->getUser($from_id, $chat_id);
-    $text = "اسم : $getUser->first_name
-    تعداد پیام : $getUser->counter
-    امتیاز : $getUser->point
-    سطح : $getUser->level
-    ";
-    $bot->debug($text);
+    $getUserInfo = $userCursor->getUser($from_id, $chat_id);
+    $botMessage = "نام کاربری شما: {$getUserInfo->first_name}\nشناسه عددی شما: {$getUserInfo->chat_id}\nتعداد پیام ها: {$getUserInfo->counter}\nامتیاز شما: {$getUserInfo->point}\nسطح شما: {$getUserInfo->level}";
+    $bot->sendMessage($chat_id, $botMessage);
     die;
 }
