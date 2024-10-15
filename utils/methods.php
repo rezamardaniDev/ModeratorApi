@@ -46,6 +46,13 @@ class Bot
         ]);
     }
 
+    public function getChatAdmins($chat_id)
+    {
+        return $this->TelegramRequest('getChatAdministrators', [
+            'chat_id'     => $chat_id
+        ]);
+    }
+
     public function debug($data)
     {
         $result = print_r($data, true);
