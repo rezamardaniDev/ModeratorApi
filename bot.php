@@ -53,12 +53,12 @@ if ($update && $settingCursor->getSetting($chat_id)) {
 # warn user in group
 if ($text == 'اخطار') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
-        $userCursor->newWarn($r_from_id, $chat_id);
+        $userCursor->newWarn($r_from_id, $chat_id , $first_name);
         $warn = $userCursor->getUser($r_from_id, $r_chat_id)->warn;
         $bot->sendMessage($chat_id, "{$r_first_name} اخطار گرفتی\nتعداد اخطار: {$warn}/3");
 
         if ($warn == 3) {
-            $userCursor->muteUser($r_from_id, $chat_id);
+            $userCursor->muteUser($r_from_id, $chat_id , $first_name);
             $bot->sendMessage($chat_id, "{$r_first_name} به دلیل 3 اخطار میوت شدی");
         }
     }
@@ -68,7 +68,7 @@ if ($text == 'اخطار') {
 # delete warn user in group
 if ($text == 'حذف اخطار') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
-        $userCursor->delWarn($r_from_id, $chat_id);
+        $userCursor->delWarn($r_from_id, $chat_id , $first_name);
         $bot->sendMessage($chat_id, "{$r_first_name} عزیز\n اخطار های شما صفر شد جووووون");
     }
     die;
@@ -82,7 +82,7 @@ if ($text == 'سکوت') {
             $bot->deleteMessages($chat_id, $message_id);
             die;
         }
-        $userCursor->muteUser($r_from_id, $r_chat_id);
+        $userCursor->muteUser($r_from_id, $r_chat_id , $first_name);
         $bot->sendMessage($r_chat_id, "کاربر {$r_first_name} توسط ناظر سکوت شد");
     }
     die;
@@ -91,7 +91,7 @@ if ($text == 'سکوت') {
 # unmute user in group
 if ($text == 'حذف سکوت') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
-        $userCursor->unMuteUser($r_from_id, $r_chat_id);
+        $userCursor->unMuteUser($r_from_id, $r_chat_id , $r_first_name);
         $bot->sendMessage($r_chat_id, "کاربر {$r_first_name} توسط ناظر رفع سکوت شد");
     }
     die;
@@ -144,11 +144,11 @@ if ($text == 'پیکربندی') {
                     }
 
                     if ($admin->status != 'creator') {
-                        $userCursor->setNewAdmin($admin->user->id, $chat_id);
+                        $userCursor->setNewAdmin($admin->user->id, $chat_id , $admin->user->first_name);
                         $botMessage .= "{$admin->user->first_name}\n";
                     }
                     if ($admin->status == 'creator') {
-                        $userCursor->setCreator($admin->user->id, $chat_id);
+                        $userCursor->setCreator($admin->user->id, $chat_id , $admin->user->first_name);
                         $botMessage .= "{$admin->user->first_name}\n";
                     }
                 }
