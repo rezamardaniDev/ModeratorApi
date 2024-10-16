@@ -55,7 +55,14 @@ if ($text == 'اخطار') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         $userCursor->newWarn($r_from_id, $chat_id);
         $warn = $userCursor->getUser($r_from_id, $r_chat_id)->warn;
-        $bot->sendMessage($chat_id, "{$r_first_name} اخطار گرفتی\nتعداد اخطار: {$warn}/3");
+
+        $botMessage = "
+کاربر〔 {$r_first_name} 〕
+
+✦ - یک اخطار توسط ناظر برای شما ثبت شد
+✘ - تعداد اخطار های شما : {$warn}/3
+                ";
+        $bot->sendMessage($chat_id, $botMessage);
 
         if ($warn == 3) {
             $userCursor->muteUser($r_from_id, $chat_id);
@@ -69,21 +76,29 @@ if ($text == 'اخطار') {
 if ($text == 'حذف اخطار') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         $userCursor->delWarn($r_from_id, $chat_id);
-        $bot->sendMessage($chat_id, "{$r_first_name} عزیز\n اخطار های شما صفر شد جووووون");
+        $warn = $userCursor->getUser($r_from_id, $r_chat_id)->warn;
+
+        $botMessage = "
+کاربر〔 {$r_first_name} 〕
+        
+✦ - اخطار های شما توسط ناظر حذف گردید
+✘ - تعداد اخطار های شما : {$warn}/3
+                        ";
+        $bot->sendMessage($chat_id, $botMessage);
     }
     die;
 }
 
 # mute user in group
 if ($text == 'سکوت') {
-    
+
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if ($userCursor->getUser($r_from_id, $r_chat_id)->is_creator) {
             $bot->deleteMessages($chat_id, $message_id);
             die;
         }
         $userCursor->muteUser($r_from_id, $r_chat_id);
-        $bot->sendMessage($r_chat_id, "کاربر {$r_first_name} توسط ناظر سکوت شد");
+        $bot->sendMessage($r_chat_id, "⊛ - کاربر {$r_first_name} توسط ناظر گروه سکوت شد");
     }
     die;
 }
@@ -92,7 +107,7 @@ if ($text == 'سکوت') {
 if ($text == 'حذف سکوت') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         $userCursor->unMuteUser($r_from_id, $r_chat_id);
-        $bot->sendMessage($r_chat_id, "کاربر {$r_first_name} توسط ناظر رفع سکوت شد");
+        $bot->sendMessage($r_chat_id, "⊚ - کاربر {$r_first_name} توسط ناظر گروه رفع سکوت شد");
     }
     die;
 }
@@ -102,9 +117,9 @@ if ($text == 'قفل سرویس') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if (!$settingCursor->getCleanServiceStat($chat_id)->clean_service) {
             $settingCursor->onCleanService($chat_id);
-            $bot->sendMessage($chat_id, 'قفل پیام های ورود و خروج کاربران فعال شد.');
+            $bot->sendMessage($chat_id, '※ - قفل پیام ورود و خروج کاربران فعال شد');
         } else {
-            $bot->sendMessage($chat_id, 'قفل سرویس از قبل فعال میباشد');
+            $bot->sendMessage($chat_id, '☺ - قفل سرویس از قبل فعال میباشد');
         }
     }
     die;
@@ -115,9 +130,9 @@ if ($text == 'حذف قفل سرویس') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if ($settingCursor->getCleanServiceStat($chat_id)->clean_service) {
             $settingCursor->offCleanService($chat_id);
-            $bot->sendMessage($chat_id, 'قفل پیام های ورود و خروج کاربران غیرفعال شد.');
+            $bot->sendMessage($chat_id, '※ - قفل پیام ورود و خروج کاربران غیرفعال شد');
         } else {
-            $bot->sendMessage($chat_id, 'قفل سرویس از قبل غیرفعال میباشد');
+            $bot->sendMessage($chat_id, '☺ - قفل سرویس از قبل غیرفعال میباشد');
         }
     }
     die;
