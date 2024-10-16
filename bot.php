@@ -8,15 +8,16 @@ require 'utils/methods.php';
 require 'utils/helpers.php';
 require 'utils/variable.php';
 require 'database/connector.php';
-require 'database/settingConnection.php';
-require 'database/userConnection.php';
+require 'database/settingsMethods.php';
+require 'database/usersMethods.php';
+require 'database/groupsMethods.php';
 # <--------------- create new object from modules --------------- > #
 $bot = new Bot($token);
 $userCursor = new UserConnection();
 $settingCursor = new SettingConnection();
+$groupCursor = new GroupConnection();
 # <--------------- main structure --------------- > #
 if ($update && $settingCursor->getSetting($chat_id)) {
-
     # clean user message is user muted
     if ($userCursor->getUser($from_id, $chat_id)->is_mute) {
         $bot->deleteMessages($chat_id, $message_id);
@@ -49,14 +50,7 @@ if ($update && $settingCursor->getSetting($chat_id)) {
     }
 }
 
-# show user info when send /me in group
-if ($text == '/me') {
-    $getUserInfo = $userCursor->getUser($from_id, $chat_id);
-    $botMessage = "نام کاربری شما: {$getUserInfo->first_name}\nشناسه عددی شما: {$getUserInfo->chat_id}\nتعداد پیام ها: {$getUserInfo->counter}\nامتیاز شما: {$getUserInfo->point}\nسطح شما: {$getUserInfo->level}";
-    $bot->sendMessage($chat_id, $botMessage);
-    die;
-}
-
+# warn user in group
 if ($text == 'اخطار') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         $userCursor->newWarn($r_from_id, $chat_id);
@@ -71,6 +65,7 @@ if ($text == 'اخطار') {
     die;
 }
 
+# delete warn user in group
 if ($text == 'حذف اخطار') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         $userCursor->delWarn($r_from_id, $chat_id);
@@ -79,7 +74,9 @@ if ($text == 'حذف اخطار') {
     die;
 }
 
+# mute user in group
 if ($text == 'سکوت') {
+    
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if ($userCursor->getUser($r_from_id, $r_chat_id)->is_creator) {
             $bot->deleteMessages($chat_id, $message_id);
@@ -91,6 +88,7 @@ if ($text == 'سکوت') {
     die;
 }
 
+# unmute user in group
 if ($text == 'حذف سکوت') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         $userCursor->unMuteUser($r_from_id, $r_chat_id);
@@ -99,6 +97,7 @@ if ($text == 'حذف سکوت') {
     die;
 }
 
+# clean on join and left message
 if ($text == 'قفل سرویس') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if (!$settingCursor->getCleanServiceStat($chat_id)->clean_service) {
@@ -111,6 +110,7 @@ if ($text == 'قفل سرویس') {
     die;
 }
 
+# clean off join and left message
 if ($text == 'حذف قفل سرویس') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if ($settingCursor->getCleanServiceStat($chat_id)->clean_service) {
@@ -123,23 +123,26 @@ if ($text == 'حذف قفل سرویس') {
     die;
 }
 
+# configuration bot in gorup when send config command
 if ($text == 'پیکربندی') {
-    foreach($bot->getChatAdmins($chat_id)->result as $admin){
-        if ($admin->user->id == $from_id && $admin->status == "creator"){
+    foreach ($bot->getChatAdmins($chat_id)->result as $admin) {
+        if ($admin->user->id == $from_id && $admin->status == "creator") {
 
             $checkExistsGroup = $settingCursor->getSetting($chat_id);
             if (!$checkExistsGroup) {
-                $settingCursor->addNewSetting($chat_id);
-        
+
+                $settingCursor->addNewSetting($chat_id, $group_name);
+                $groupCursor->addNewGroup($chat_id, $group_name);
                 $getChatAdmins = $bot->getChatAdmins($chat_id)->result;
+
                 $botMessage = "پیکربندی انجام شد\nادمین های شناسایی شده: \n\n";
-        
+
                 foreach ($getChatAdmins as $admin) {
                     $userExists = $userCursor->getUser($admin->user->id, $chat_id);
                     if (!$userExists) {
                         $userCursor->addNewUser($admin->user->id, $chat_id, $admin->user->first_name);
                     }
-        
+
                     if ($admin->status != 'creator') {
                         $userCursor->setNewAdmin($admin->user->id, $chat_id);
                         $botMessage .= "{$admin->user->first_name}\n";
@@ -154,11 +157,19 @@ if ($text == 'پیکربندی') {
             die;
         }
     };
-
     die;
 }
 
+# show user info when send /me in group
+if ($text == '/me') {
+    $getUserInfo = $userCursor->getUser($from_id, $chat_id);
+    $botMessage = "نام کاربری شما: {$getUserInfo->first_name}\nشناسه عددی شما: {$getUserInfo->chat_id}\nتعداد پیام ها: {$getUserInfo->counter}\nامتیاز شما: {$getUserInfo->point}\nسطح شما: {$getUserInfo->level}";
+    $bot->sendMessage($chat_id, $botMessage);
+    die;
+}
+
+# when user send bot command, bot send status
 if ($text == 'ربات') {
-    $bot->sendMessage($from_id, 'bot is online!');
+    $bot->sendMessage($chat_id, 'bot is online!');
     die;
 }

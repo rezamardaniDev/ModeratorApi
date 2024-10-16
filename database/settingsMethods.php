@@ -3,10 +3,10 @@
 class SettingConnection extends Connection
 {
     # add new user to Database
-    public function addNewSetting($group_id)
+    public function addNewSetting($group_id, $group_name)
     {
-        $stmt = $this->db->prepare("INSERT INTO `tb_settings` (`group_id`) VALUES (?)");
-        $stmt->execute([$group_id]);
+        $stmt = $this->db->prepare("INSERT INTO `tb_settings` (`group_id`, `group_name`) VALUES (?, ?)");
+        $stmt->execute([$group_id, $group_name]);
     }
 
     # get group info
