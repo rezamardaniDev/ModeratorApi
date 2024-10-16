@@ -24,46 +24,65 @@ class UserConnection extends Connection
         $stmt->execute([$chat_id, $group_id]);
     }
 
-    public function newWarn($from_id, $group_id)
+    public function newWarn($chat_id, $group_id , $first_name)
     {
-        if ($this->getUser($from_id, $group_id)) {
-            $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `warn` = `warn` + 1 WHERE `chat_id` = ? AND `group_id` = ?");
-            $stmt->execute([$from_id, $group_id]);
+        if (!$this->getUser($chat_id, $group_id)) {
+            $this->addNewUser($chat_id , $group_id , $first_name);
         }
+        $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `warn` = `warn` + 1 WHERE `chat_id` = ? AND `group_id` = ?");
+        $stmt->execute([$chat_id, $group_id]);
     }
 
-    public function delWarn($from_id, $group_id)
+    public function delWarn($chat_id, $group_id , $first_name)
     {
+        if (!$this->getUser($chat_id, $group_id)) {
+            $this->addNewUser($chat_id , $group_id , $first_name);
+        }
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `warn` = 0 WHERE `chat_id` = ? AND `group_id` = ?");
-        $stmt->execute([$from_id, $group_id]);
+        $stmt->execute([$chat_id, $group_id]);
     }
 
-    public function muteUser($from_id, $group_id)
+    public function muteUser($chat_id, $group_id , $first_name)
     {
+        if (!$this->getUser($chat_id, $group_id)) {
+            $this->addNewUser($chat_id , $group_id , $first_name);
+        }
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `is_mute` = 1 WHERE `chat_id` = ? AND `group_id` = ?");
-        $stmt->execute([$from_id, $group_id]);
+        $stmt->execute([$chat_id, $group_id]);
     }
 
-    public function unMuteUser($from_id, $group_id)
+    public function unMuteUser($chat_id, $group_id , $first_name)
     {
+        if (!$this->getUser($chat_id, $group_id)) {
+            $this->addNewUser($chat_id , $group_id , $first_name);
+        }
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `is_mute` = 0 WHERE `chat_id` = ? AND `group_id` = ?");
-        $stmt->execute([$from_id, $group_id]);
+        $stmt->execute([$chat_id, $group_id]);
     }
 
-    public function setCreator($from_id, $group_id)
+    public function setCreator($chat_id, $group_id , $first_name)
     {
+        if (!$this->getUser($chat_id, $group_id)) {
+            $this->addNewUser($chat_id , $group_id , $first_name);
+        }
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `is_creator` = 1 WHERE `chat_id` = ? AND `group_id` = ?");
-        $stmt->execute([$from_id, $group_id]);
+        $stmt->execute([$chat_id, $group_id]);
     }
 
-    public function setNewAdmin($from_id, $group_id)
+    public function setNewAdmin($chat_id, $group_id , $first_name)
     {
+        if (!$this->getUser($chat_id, $group_id)) {
+            $this->addNewUser($chat_id , $group_id , $first_name);
+        }
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `is_admin` = 1 WHERE `chat_id` = ? AND `group_id` = ?");
-        $stmt->execute([$from_id, $group_id]);
+        $stmt->execute([$chat_id, $group_id]);
     }
-    public function removeNewAdmin($from_id, $group_id)
+    public function removeNewAdmin($chat_id, $group_id , $first_name)
     {
+        if (!$this->getUser($chat_id, $group_id)) {
+            $this->addNewUser($chat_id , $group_id , $first_name);
+        }
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `is_admin` = 0 WHERE `chat_id` = ? AND `group_id` = ?");
-        $stmt->execute([$from_id, $group_id]);
+        $stmt->execute([$chat_id, $group_id]);
     }
 }
