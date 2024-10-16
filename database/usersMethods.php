@@ -26,8 +26,10 @@ class UserConnection extends Connection
 
     public function newWarn($from_id, $group_id)
     {
-        $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `warn` = `warn` + 1 WHERE `chat_id` = ? AND `group_id` = ?");
-        $stmt->execute([$from_id, $group_id]);
+        if ($this->getUser($from_id, $group_id)) {
+            $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `warn` = `warn` + 1 WHERE `chat_id` = ? AND `group_id` = ?");
+            $stmt->execute([$from_id, $group_id]);
+        }
     }
 
     public function delWarn($from_id, $group_id)

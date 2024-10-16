@@ -10,13 +10,14 @@ require 'utils/variable.php';
 require 'database/connector.php';
 require 'database/settingsMethods.php';
 require 'database/usersMethods.php';
+require 'database/groupsMethods.php';
 # <--------------- create new object from modules --------------- > #
 $bot = new Bot($token);
 $userCursor = new UserConnection();
 $settingCursor = new SettingConnection();
+$groupCursor = new GroupConnection();
 # <--------------- main structure --------------- > #
 if ($update && $settingCursor->getSetting($chat_id)) {
-
     # clean user message is user muted
     if ($userCursor->getUser($from_id, $chat_id)->is_mute) {
         $bot->deleteMessages($chat_id, $message_id);
@@ -75,6 +76,7 @@ if ($text == 'حذف اخطار') {
 
 # mute user in group
 if ($text == 'سکوت') {
+    
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if ($userCursor->getUser($r_from_id, $r_chat_id)->is_creator) {
             $bot->deleteMessages($chat_id, $message_id);
@@ -128,9 +130,11 @@ if ($text == 'پیکربندی') {
 
             $checkExistsGroup = $settingCursor->getSetting($chat_id);
             if (!$checkExistsGroup) {
-                $settingCursor->addNewSetting($chat_id);
 
+                $settingCursor->addNewSetting($chat_id, $group_name);
+                $groupCursor->addNewGroup($chat_id, $group_name);
                 $getChatAdmins = $bot->getChatAdmins($chat_id)->result;
+
                 $botMessage = "پیکربندی انجام شد\nادمین های شناسایی شده: \n\n";
 
                 foreach ($getChatAdmins as $admin) {
