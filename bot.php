@@ -8,8 +8,8 @@ require 'utils/methods.php';
 require 'utils/helpers.php';
 require 'utils/variable.php';
 require 'database/connector.php';
-require 'database/settingConnection.php';
-require 'database/userConnection.php';
+require 'database/settingsMethods.php';
+require 'database/usersMethods.php';
 # <--------------- create new object from modules --------------- > #
 $bot = new Bot($token);
 $userCursor = new UserConnection();
@@ -164,6 +164,7 @@ if ($text == '/me') {
     die;
 }
 
+# when user send bot command, bot send status
 if ($text == 'ربات') {
     $bot->sendMessage($chat_id, 'bot is online!');
     die;
