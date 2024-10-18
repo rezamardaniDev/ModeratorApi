@@ -54,7 +54,11 @@ if ($update && $settingCursor->getSetting($chat_id)) {
 # warn user in group
 if ($text == 'اخطار') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
-        $userCursor->newWarn($r_from_id, $chat_id, $r_first_name);
+        if ($userCursor->getUser($r_from_id, $r_chat_id)->is_creator) {
+            $bot->deleteMessages($chat_id, $message_id);
+            die;
+        }
+        $userCursor->newWarn($r_from_id, $chat_id, $first_name);
         $warn = $userCursor->getUser($r_from_id, $r_chat_id)->warn;
 
         $botMessage = "
