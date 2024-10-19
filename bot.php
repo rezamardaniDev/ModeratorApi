@@ -189,10 +189,36 @@ if ($text == 'پیکربندی') {
 
 # show user info when send /me in group
 if ($text == '/me') {
-    $getUserInfo = $userCursor->getUser($from_id, $chat_id);
-    $warn = $userCursor->getUser($from_id, $chat_id)->warn;
-    $botMessage = "نام کاربری شما: {$getUserInfo->first_name}\nشناسه عددی شما: {$getUserInfo->chat_id}\nتعداد پیام ها: {$getUserInfo->counter}\nتعداد اخطارها: {$warn}\nامتیاز شما: {$getUserInfo->point}\nسطح شما: {$getUserInfo->level}";
-    $bot->sendMessage($chat_id, $botMessage);
+    $bot->deleteMessages($chat_id, $r_message_id);
+    if ($r_from_id) {
+        $getUserInfo = $userCursor->getUser($r_from_id, $r_chat_id);
+        $botMessage = "نام کاربری شما: {$getUserInfo->first_name}\nشناسه عددی شما: {$getUserInfo->chat_id}\nتعداد پیام ها: {$getUserInfo->counter}\nتعداد اخطارها: {$getUserInfo->warn}\nامتیاز شما: {$getUserInfo->point}\nسطح شما: {$getUserInfo->level}";
+        $bot->sendMessage($chat_id, $botMessage);
+    } else {
+        $getUserInfo = $userCursor->getUser($from_id, $chat_id);
+        $botMessage = "نام کاربری شما: {$getUserInfo->first_name}\nشناسه عددی شما: {$getUserInfo->chat_id}\nتعداد پیام ها: {$getUserInfo->counter}\nتعداد اخطارها: {$getUserInfo->warn}\nامتیاز شما: {$getUserInfo->point}\nسطح شما: {$getUserInfo->level}";
+        $bot->sendMessage($chat_id, $botMessage);
+    }
+    die;
+}
+
+if ($text == '+') {
+    $enougPoint = $userCursor->getUser($from_id, $chat_id)->point;
+    if ($r_from_id && $enougPoint >= 1) {
+        $userCursor->addPoint($r_from_id, $r_chat_id);
+        $bot->sendMessage($r_chat_id, "یک امتیاز از کاربر {$first_name} به {$r_first_name} اهدا شد");
+    } else {
+        $bot->sendMessage($r_chat_id, "خطایی در اهدایی امتیاز رخ داد!");
+    }
+    die;
+}
+
+if (preg_match('/^ارتقا به/', $text)) {
+    if ($userCursor->getUser($from_id, $chat_id)->is_creator) {
+        $rule = explode(' ', $text)[2];
+        $userCursor->setLevel($r_from_id, $r_chat_id, $rule);
+        $bot->sendMessage($chat_id, "مقام کاربر به {$rule} تغییر کرد");
+    }
     die;
 }
 
