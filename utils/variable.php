@@ -11,6 +11,8 @@ if (isset($update->message)) {
     $group_name  = $message->chat->title;
     $join_member = $message->new_chat_participant;
     $left_member = $message->left_chat_participant;
+    $new_member_name = $join_member->first_name;
+    $left_member_name = $left_member->first_name;
     $participant_id = $join_member->id;
     $participant_first_name = $join_member->first_name;
 }

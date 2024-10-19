@@ -28,6 +28,13 @@ if ($update && $settingCursor->getSetting($chat_id)) {
     # clean join and left message
     if (($join_member || $left_member) && $settingCursor->getCleanServiceStat($chat_id)->clean_service) {
         $bot->deleteMessages($chat_id, $message_id);
+
+        if ($join_member) {
+            $bot->debug("`System Log:`\n\n" . "کاربر **{$new_member_name}** به گروه {$group_name} پیوست.");
+        }
+        if ($left_member) {
+            $bot->debug("`System Log:`\n\n" . "کاربر **{$left_member_name}** از گروه {$group_name} خارج شد.");
+        }
     }
 
     # when new member join group, added to database
