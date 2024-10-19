@@ -190,7 +190,8 @@ if ($text == 'پیکربندی') {
 # show user info when send /me in group
 if ($text == '/me') {
     $getUserInfo = $userCursor->getUser($from_id, $chat_id);
-    $botMessage = "نام کاربری شما: {$getUserInfo->first_name}\nشناسه عددی شما: {$getUserInfo->chat_id}\nتعداد پیام ها: {$getUserInfo->counter}\nامتیاز شما: {$getUserInfo->point}\nسطح شما: {$getUserInfo->level}";
+    $warn = $userCursor->getUser($from_id, $chat_id)->warn;
+    $botMessage = "نام کاربری شما: {$getUserInfo->first_name}\nشناسه عددی شما: {$getUserInfo->chat_id}\nتعداد پیام ها: {$getUserInfo->counter}\nتعداد اخطارها: {$warn}\nامتیاز شما: {$getUserInfo->point}\nسطح شما: {$getUserInfo->level}";
     $bot->sendMessage($chat_id, $botMessage);
     die;
 }
