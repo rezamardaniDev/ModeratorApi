@@ -28,7 +28,10 @@ if ($update && $settingCursor->getSetting($chat_id)) {
     # clean join and left message
     if (($join_member || $left_member) && $settingCursor->getCleanServiceStat($chat_id)->clean_service) {
         $bot->deleteMessages($chat_id, $message_id);
+    }
 
+    # when user join our left bot send Message
+    if (($join_member || $left_member) && $settingCursor->getLogService($chat_id)->log_service) {
         if ($join_member) {
             $bot->debug("`System Log:`\n\n" . "کاربر **{$new_member_name}** به گروه {$group_name} پیوست.");
         }
@@ -150,6 +153,31 @@ if ($text == 'حذف قفل سرویس') {
     die;
 }
 
+if ($text == 'لاگ روشن') {
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
+        if (!$settingCursor->getLogService($chat_id)->log_service) {
+            $settingCursor->onLogService($chat_id);
+            $bot->sendMessage($chat_id, '※ - لاگ سیستم فعال شد، ورود و خروج کاربران گروه به اطلاع شما خواهد رسید');
+        } else {
+            $bot->sendMessage($chat_id, '☺ - لاگ سیستم از قبل فعال میباشد');
+        }
+    }
+    die;
+}
+
+# clean off join and left message
+if ($text == 'لاگ خاموش') {
+    if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
+        if ($settingCursor->getLogService($chat_id)->log_service) {
+            $settingCursor->offLogService($chat_id);
+            $bot->sendMessage($chat_id, '※ - لاگ سیستم غیرفعال شد، ورود و خروج کاربران اطلاع رسانی نخواهد شد');
+        } else {
+            $bot->sendMessage($chat_id, '☺ - لاگ سیستم غیرفعال میباشد');
+        }
+    }
+    die;
+}
+
 # configuration bot in gorup when send config command
 if ($text == 'پیکربندی') {
     foreach ($bot->getChatAdmins($chat_id)->result as $admin) {
@@ -223,7 +251,7 @@ if (preg_match('/^ارتقا به/', $text)) {
 }
 
 # when user send bot command, bot send status
-if ($text == 'ربات') {
-    $bot->sendMessage($chat_id, 'bot is online!');
+if ($text == 'ping') {
+    $bot->sendMessage($chat_id, "`bot is online!`\n\n*- Developers*\n@DevSector\n@alirezaSDTD\n\n*- Hosting*\nhttps://aranserver.com");
     die;
 }

@@ -41,6 +41,28 @@ class SettingConnection extends Connection
         $stmt->execute([$group_id]);
     }
 
+    # get cleanService info from Database
+    public function getLogService($group_id)
+    {
+        $stmt = $this->db->prepare("SELECT `log_service` FROM `tb_settings` WHERE `group_id` = ?");
+        $stmt->execute([$group_id]);
+        return $stmt->fetch();
+    }
+
+    # set 1 for cleanService in database
+    public function onLogService($group_id)
+    {
+        $stmt = $this->db->prepare("UPDATE `tb_settings` SET `log_service` = 1 WHERE `group_id` = ?");
+        $stmt->execute([$group_id]);
+    }
+
+    # set 0 for cleanService in database
+    public function offLogService($group_id)
+    {
+        $stmt = $this->db->prepare("UPDATE `tb_settings` SET `log_service` = 0 WHERE `group_id` = ?");
+        $stmt->execute([$group_id]);
+    }
+
 
 
     # get cleanlink info from Database
