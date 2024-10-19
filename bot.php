@@ -132,9 +132,9 @@ if ($text == 'قفل سرویس') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if (!$settingCursor->getCleanServiceStat($chat_id)->clean_service) {
             $settingCursor->onCleanService($chat_id);
-            $bot->sendMessage($chat_id, '※ - قفل پیام ورود و خروج کاربران فعال شد');
+            $bot->sendMessage($chat_id, '✔ - قفل پیام ورود و خروج کاربران فعال شد');
         } else {
-            $bot->sendMessage($chat_id, '☺ - قفل سرویس از قبل فعال میباشد');
+            $bot->sendMessage($chat_id, '• - قفل سرویس از قبل فعال میباشد');
         }
     }
     die;
@@ -145,9 +145,9 @@ if ($text == 'حذف قفل سرویس') {
     if ($userCursor->getUser($from_id, $chat_id)->is_admin || $userCursor->getUser($from_id, $chat_id)->is_creator) {
         if ($settingCursor->getCleanServiceStat($chat_id)->clean_service) {
             $settingCursor->offCleanService($chat_id);
-            $bot->sendMessage($chat_id, '※ - قفل پیام ورود و خروج کاربران غیرفعال شد');
+            $bot->sendMessage($chat_id, '✘ - قفل پیام ورود و خروج کاربران غیرفعال شد');
         } else {
-            $bot->sendMessage($chat_id, '☺ - قفل سرویس از قبل غیرفعال میباشد');
+            $bot->sendMessage($chat_id, '• - قفل سرویس از قبل غیرفعال میباشد');
         }
     }
     die;
@@ -252,6 +252,6 @@ if (preg_match('/^ارتقا به/', $text)) {
 
 # when user send bot command, bot send status
 if ($text == 'ping') {
-    $bot->sendMessage($chat_id, "`bot is online!`\n\n*- Developers*\n@DevSector\n@alirezaSDTD\n\n*- Hosting*\nhttps://aranserver.com");
+    $bot->sendMessage($chat_id, "▾ `bot is online!` ▾\n\n*- Developers⤦*\n@DevSector\n@alirezaSDTD\n\n*- Hosting⤦*\nhttps://aranserver.com\n\n✦ Powered by *PHP* ✦");
     die;
 }
