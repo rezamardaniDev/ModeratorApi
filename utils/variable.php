@@ -6,7 +6,7 @@ if (isset($update->message)) {
     $from_id = $message->from->id;
     $first_name = $message->from->first_name;
     $chat_id = $message->chat->id;
-    $first_name = $message->from->first_name;
+    $first_name = htmlspecialchars($message->from->first_name, ENT_QUOTES, 'UTF-8');
     $message_id  = $update->message->message_id;
     $group_name  = $message->chat->title;
     $join_member = $message->new_chat_participant;
@@ -23,7 +23,7 @@ if (isset($update->message->reply_to_message)) {
     $r_text    = $message->text;
     $r_from_id = $message->from->id;
     $r_chat_id = $message->chat->id;
-    $r_first_name = $message->from->first_name;
+    $r_first_name = htmlspecialchars($message->from->first_name, ENT_QUOTES, 'UTF-8');
     $r_message_id  = $update->message->message_id;
     $r_join_member = $message->new_chat_participant;
     $r_left_member = $message->left_chat_participant;

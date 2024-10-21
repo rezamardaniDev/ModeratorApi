@@ -85,16 +85,4 @@ class UserConnection extends Connection
         $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `is_admin` = 0 WHERE `chat_id` = ? AND `group_id` = ?");
         $stmt->execute([$chat_id, $group_id]);
     }
-
-    public function addPoint($from_id, $group_id)
-    {
-        $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `point` = `point` + 1 WHERE `chat_id` = ? AND `group_id` = ? ");
-        $stmt->execute([$from_id, $group_id]);
-    }
-
-    public function setLevel($from_id, $group_id, $level)
-    {
-        $stmt = $this->db->prepare("UPDATE `tb_userStat` SET `level` = ? WHERE `chat_id` = ? AND `group_id` = ? ");
-        $stmt->execute([$level, $from_id, $group_id]);
-    }
 }
